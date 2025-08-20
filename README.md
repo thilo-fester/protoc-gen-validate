@@ -114,6 +114,7 @@ cd protoc-gen-validate && make build
   supported options are:
     - `go`
     - `cc` for c++ (partially implemented)
+    - `csharp` for C# (experimental)
     - `java`
 - Note: Python works via runtime code generation. There's no compile-time
   generation. See the Python section for details.
@@ -267,6 +268,43 @@ index.validatorFor(message.getClass()).assertValid(message);
 clientStub = clientStub.withInterceptors(new ValidatingClientInterceptor(index));
 serverBuilder.addService(ServerInterceptors.intercept(svc, new ValidatingServerInterceptor(index)));
 ```
+
+#### C#
+
+C# generation creates static validator methods for protobuf messages. For a proto file `example.proto`, the corresponding validation code is generated into `Example.Validator.cs`:
+
+```sh
+protoc \
+  -I . \
+  -I path/to/validate/ \
+  --csharp_out="../generated" \
+  --validate_out="lang=csharp:../generated" \
+  example.proto
+```
+
+The generated validation methods can be used as follows:
+
+```csharp
+// Create and populate a message
+var person = new Person 
+{
+    Id = 123, // This will fail validation (must be > 999)
+    Email = "invalid-email"
+};
+
+try 
+{
+    // Validate the message
+    PersonValidator.ValidatePerson(person);
+    Console.WriteLine("Message is valid!");
+}
+catch (ValidationException ex)
+{
+    Console.WriteLine($"Validation failed: {ex.Message}");
+}
+```
+
+**Note**: C# support is experimental and requires .NET 6.0 or later and the Google.Protobuf NuGet package.
 
 #### Python
 

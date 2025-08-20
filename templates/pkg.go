@@ -8,6 +8,7 @@ import (
 
 	"github.com/envoyproxy/protoc-gen-validate/templates/cc"
 	"github.com/envoyproxy/protoc-gen-validate/templates/ccnop"
+	"github.com/envoyproxy/protoc-gen-validate/templates/csharp"
 	"github.com/envoyproxy/protoc-gen-validate/templates/go"
 	"github.com/envoyproxy/protoc-gen-validate/templates/java"
 	"github.com/envoyproxy/protoc-gen-validate/templates/shared"
@@ -27,10 +28,11 @@ func makeTemplate(ext string, fn RegisterFn, params pgs.Parameters) *template.Te
 
 func Template(params pgs.Parameters) map[string][]*template.Template {
 	return map[string][]*template.Template{
-		"cc":    {makeTemplate("h", cc.RegisterHeader, params), makeTemplate("cc", cc.RegisterModule, params)},
-		"ccnop": {makeTemplate("h", ccnop.RegisterHeader, params), makeTemplate("cc", ccnop.RegisterModule, params)},
-		"go":    {makeTemplate("go", golang.Register, params)},
-		"java":  {makeTemplate("java", java.Register, params)},
+		"cc":     {makeTemplate("h", cc.RegisterHeader, params), makeTemplate("cc", cc.RegisterModule, params)},
+		"ccnop":  {makeTemplate("h", ccnop.RegisterHeader, params), makeTemplate("cc", ccnop.RegisterModule, params)},
+		"csharp": {makeTemplate("cs", csharp.Register, params)},
+		"go":     {makeTemplate("go", golang.Register, params)},
+		"java":   {makeTemplate("java", java.Register, params)},
 	}
 }
 
@@ -42,6 +44,8 @@ func FilePathFor(tpl *template.Template) FilePathFn {
 		return cc.CcFilePath
 	case "cc":
 		return cc.CcFilePath
+	case "cs":
+		return csharp.CsharpFilePath
 	case "java":
 		return java.JavaFilePath
 	default:
